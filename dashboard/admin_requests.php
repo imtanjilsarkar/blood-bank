@@ -7,18 +7,38 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-/* ACTION HANDLER */
+/* =========================
+   APPROVE REQUEST
+========================= */
 if (isset($_GET['action']) && isset($_GET['id'])) {
 
     $id = intval($_GET['id']);
     $action = $_GET['action'];
 
-    if ($action == "approve") {
-        mysqli_query($conn, "UPDATE blood_requests SET status='approved' WHERE id=$id");
-    }
+    // fetch request
+    $req = mysqli_fetch_assoc(mysqli_query(
+        $conn,
+        "SELECT * FROM blood_requests WHERE id=$id"
+    ));
 
-    if ($action == "reject") {
-        mysqli_query($conn, "UPDATE blood_requests SET status='rejected' WHERE id=$id");
+    if ($req) {
+
+        if ($action == "approve") {
+
+            // 1. update request
+            mysqli_query($conn, "UPDATE blood_requests SET status='approved' WHERE id=$id");
+
+            // 2. update blood stock (DEDUCT units)
+            mysqli_query($conn, "
+                UPDATE blood_stock 
+                SET units_available = units_available - {$req['units']}
+                WHERE blood_group='{$req['blood_group']}'
+            ");
+        }
+
+        if ($action == "reject") {
+            mysqli_query($conn, "UPDATE blood_requests SET status='rejected' WHERE id=$id");
+        }
     }
 
     header("Location: admin_requests.php");
@@ -29,143 +49,134 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Requests</title>
+<title>Admin Blood Requests</title>
 
-    <style>
-        body {
-            font-family: Inter, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: linear-gradient(135deg, #f4f6f9, #ffffff);
+}
 
-        .container {
-            padding: 20px;
-        }
+/* GLASS CONTAINER */
+.container {
+    padding: 25px;
+}
 
-        h2 {
-            margin-bottom: 20px;
-        }
+/* TITLE */
+h2 {
+    margin-bottom: 20px;
+    color: #111;
+}
 
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+/* GLASS TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
 
-        th {
-            background: #111;
-            color: white;
-            padding: 12px;
-        }
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(12px);
 
-        td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
+    border-radius: 14px;
+    overflow: hidden;
 
-        /* STATUS BADGES */
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
 
-        .pending {
-            background: #fff3cd;
-            color: #856404;
-        }
+th {
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 14px;
+}
 
-        .approved {
-            background: #d4edda;
-            color: #155724;
-        }
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
 
-        .rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
+/* BADGES */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
 
-        /* BUTTONS */
-        .btn {
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 12px;
-            margin: 2px;
-        }
+.pending { background:#fff3cd; color:#856404; }
+.approved { background:#d4edda; color:#155724; }
+.rejected { background:#f8d7da; color:#721c24; }
 
-        .approve {
-            background: #28a745;
-        }
+/* BUTTONS */
+.btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 12px;
+    margin: 2px;
+    transition: 0.2s;
+}
 
-        .reject {
-            background: #dc3545;
-        }
+.approve { background:#28a745; }
+.reject { background:#dc3545; }
 
-        .btn:hover {
-            opacity: 0.85;
-        }
-    </style>
+.btn:hover {
+    transform: scale(1.05);
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h2>Blood Requests Panel</h2>
+<h2>Hospital Blood Requests</h2>
 
-    <table>
+<table>
 
-        <tr>
-            <th>ID</th>
-            <th>Hospital</th>
-            <th>Blood Group</th>
-            <th>Units</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
+<tr>
+    <th>ID</th>
+    <th>Hospital</th>
+    <th>Blood Group</th>
+    <th>Units</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
 
+<?php
+$result = mysqli_query($conn, "SELECT * FROM blood_requests ORDER BY id DESC");
+
+while ($row = mysqli_fetch_assoc($result)) {
+?>
+
+<tr>
+    <td><?= $row['id'] ?></td>
+    <td><?= $row['hospital_name'] ?></td>
+    <td><?= $row['blood_group'] ?></td>
+    <td><?= $row['units'] ?></td>
+
+    <td>
         <?php
-        $result = mysqli_query($conn, "SELECT * FROM blood_requests ORDER BY id DESC");
-
-        while ($row = mysqli_fetch_assoc($result)) {
+        if ($row['status'] == "approved") {
+            echo "<span class='badge approved'>Approved</span>";
+        } elseif ($row['status'] == "rejected") {
+            echo "<span class='badge rejected'>Rejected</span>";
+        } else {
+            echo "<span class='badge pending'>Pending</span>";
+        }
         ?>
+    </td>
 
-        <tr>
-            <td><?php echo $row['id']; ?></td>
-            <td><?php echo $row['hospital_name']; ?></td>
-            <td><?php echo $row['blood_group']; ?></td>
-            <td><?php echo $row['units']; ?></td>
+    <td>
+        <a class="btn approve" href="?action=approve&id=<?= $row['id'] ?>">Approve</a>
+        <a class="btn reject" href="?action=reject&id=<?= $row['id'] ?>">Reject</a>
+    </td>
+</tr>
 
-            <!-- STATUS BADGE -->
-            <td>
-                <?php
-                if ($row['status'] == "approved") {
-                    echo "<span class='badge approved'>Approved</span>";
-                } elseif ($row['status'] == "rejected") {
-                    echo "<span class='badge rejected'>Rejected</span>";
-                } else {
-                    echo "<span class='badge pending'>Pending</span>";
-                }
-                ?>
-            </td>
+<?php } ?>
 
-            <!-- ACTION -->
-            <td>
-                <a class="btn approve" href="?action=approve&id=<?php echo $row['id']; ?>">Approve</a>
-                <a class="btn reject" href="?action=reject&id=<?php echo $row['id']; ?>">Reject</a>
-            </td>
-        </tr>
-
-        <?php } ?>
-
-    </table>
+</table>
 
 </div>
 

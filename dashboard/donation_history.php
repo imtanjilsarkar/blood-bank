@@ -7,96 +7,127 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'donor') {
     exit();
 }
 
-$name = $_SESSION['name'];
+$donor_id = $_SESSION['user_id'];
+$donations = mysqli_query($conn, "SELECT * FROM donations WHERE donor_id='$donor_id' ORDER BY donation_date DESC");
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Donation History</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation History | LifeFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-body {
-    margin:0;
-    font-family:Inter;
-    background: linear-gradient(135deg,#f5f7fa,#fff);
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            padding: 30px;
+        }
 
-.container {
-    padding:40px;
-}
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-.box {
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(18px);
-    padding:20px;
-    border-radius:18px;
-    box-shadow:0 15px 30px rgba(0,0,0,0.08);
-}
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-table {
-    width:100%;
-    border-collapse:collapse;
-}
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #fff, #c7362b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-th {
-    background:#111;
-    color:white;
-    padding:10px;
-}
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow-x: auto;
+            padding: 20px;
+        }
 
-td {
-    padding:12px;
-    text-align:center;
-    border-bottom:1px solid #eee;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.badge {
-    padding:5px 10px;
-    border-radius:20px;
-    font-size:12px;
-}
+        th {
+            text-align: left;
+            padding: 15px;
+            color: #c7362b;
+            border-bottom: 2px solid rgba(199, 54, 43, 0.3);
+        }
 
-</style>
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+    </style>
 </head>
-
 <body>
-
 <div class="container">
+    <div class="header">
+        <h1><i class="fas fa-history"></i> My Donation History</h1>
+        <p style="color: #b0b0b0;">Track all your past blood donations</p>
+    </div>
 
-<div class="box">
-
-<h2>Donation History</h2>
-
-<table>
-
-<tr>
-    <th>ID</th>
-    <th>Blood Group</th>
-    <th>Units</th>
-    <th>Date</th>
-</tr>
-
-<?php
-$q = mysqli_query($conn,"SELECT * FROM donations WHERE donor_name='$name' ORDER BY id DESC");
-
-while($r = mysqli_fetch_assoc($q)) {
-?>
-
-<tr>
-    <td><?= $r['id'] ?></td>
-    <td><?= $r['blood_group'] ?></td>
-    <td><?= $r['units'] ?></td>
-    <td><?= $r['donation_date'] ?></td>
-</tr>
-
-<?php } ?>
-
-</table>
-
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Blood Group</th>
+                    <th>Units</th>
+                    <th>Donation Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $count = 1;
+                while ($row = mysqli_fetch_assoc($donations)): 
+                ?>
+                <tr>
+                    <td><?= $count++ ?></td>
+                    <td><strong><?= $row['blood_group'] ?></strong></td>
+                    <td><?= $row['units'] ?> unit(s)</td>
+                    <td><?= date('F d, Y', strtotime($row['donation_date'])) ?></td>
+                    <td><span class="badge"><i class="fas fa-check-circle"></i> Completed</span></td>
+                </tr>
+                <?php endwhile; ?>
+                
+                <?php if ($count == 1): ?>
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #b0b0b0;">
+                        <i class="fas fa-info-circle"></i> No donation records found yet
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-</div>
-
 </body>
 </html>

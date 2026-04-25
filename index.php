@@ -1,374 +1,611 @@
 <?php
+session_start();
 include("database/connection.php");
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Blood Bank Management System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeFlow | Next-Gen Blood Bank System 2026</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
 
-<style>
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(199, 54, 43, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(199, 54, 43, 0.08) 0%, transparent 50%);
+            z-index: -2;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(45deg, 
+                rgba(199, 54, 43, 0.02) 0px, 
+                rgba(199, 54, 43, 0.02) 2px,
+                transparent 2px,
+                transparent 8px);
+            animation: moveBg 20s linear infinite;
+        }
 
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa, #ffffff);
-    overflow-x: hidden;
-}
+        @keyframes moveBg {
+            0% { transform: translate(-10%, -10%) rotate(0deg); }
+            100% { transform: translate(10%, 10%) rotate(360deg); }
+        }
 
-/* BACKGROUND GLOW */
-body::before,
-body::after {
-    content: "";
-    position: fixed;
-    width: 450px;
-    height: 450px;
-    border-radius: 50%;
-    background: rgba(176, 42, 42, 0.10);
-    filter: blur(120px);
-    z-index: 0;
-}
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 5%;
+            right: 5%;
+            width: 90%;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 80px;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
 
-body::before {
-    top: -120px;
-    left: -120px;
-}
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #c7362b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-body::after {
-    bottom: -120px;
-    right: -120px;
-}
+        .logo i {
+            background: none;
+            color: #c7362b;
+        }
 
-/* NAVBAR */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 999;
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+        .nav-links a {
+            text-decoration: none;
+            color: #e0e0e0;
+            font-weight: 500;
+            transition: 0.3s;
+        }
 
-    padding: 14px 40px;
+        .nav-links a:hover {
+            color: #c7362b;
+        }
 
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(14px);
+        .btn-login {
+            background: linear-gradient(135deg, #c7362b, #a1241a);
+            padding: 10px 28px;
+            border-radius: 40px;
+            color: white !important;
+        }
 
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-}
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10%;
+            position: relative;
+        }
 
-.navbar b {
-    color: #b02a2a;
-    font-size: 16px;
-}
+        .hero-content {
+            flex: 1;
+        }
 
-.navbar a {
-    text-decoration: none;
-    margin-left: 18px;
-    color: #222;
-    font-weight: 500;
-}
+        .hero-badge {
+            display: inline-block;
+            background: rgba(199, 54, 43, 0.2);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(199, 54, 43, 0.3);
+        }
 
-.navbar a:hover {
-    color: #b02a2a;
-}
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
 
-/* HERO */
-.hero {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
+        .hero-content p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
 
-.hero-card {
-    width: 100%;
-    max-width: 750px;
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
-    padding: 45px;
-    border-radius: 20px;
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    background: rgba(255,255,255,0.40);
-    backdrop-filter: blur(20px);
+        .btn-primary {
+            background: linear-gradient(135deg, #c7362b, #a1241a);
+            color: white;
+        }
 
-    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(199, 54, 43, 0.4);
+        }
 
-    text-align: center;
-}
+        .btn-outline {
+            border: 2px solid #c7362b;
+            color: white;
+            background: transparent;
+        }
 
-.hero-card h1 {
-    font-size: 40px;
-    margin-bottom: 12px;
-    color: #111;
-}
+        .btn-outline:hover {
+            background: rgba(199, 54, 43, 0.1);
+            transform: translateY(-3px);
+        }
 
-.hero-card p {
-    font-size: 15px;
-    color: #444;
-    line-height: 1.6;
-}
+        .hero-stats {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-/* BUTTONS */
-.btn-group {
-    margin-top: 22px;
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-}
+        .stat-circle {
+            text-align: center;
+        }
 
-.btn {
-    display: inline-block;
-    padding: 12px 22px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    min-width: 140px;
-    text-align: center;
-    transition: 0.3s;
-}
+        .circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(199, 54, 43, 0.2), rgba(199, 54, 43, 0.05));
+            border: 2px solid rgba(199, 54, 43, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
 
-.btn-primary {
-    background: #b02a2a;
-    color: white;
-}
+        /* Sections */
+        .section {
+            padding: 80px 10%;
+        }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-}
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
-.btn-outline {
-    border: 2px solid #b02a2a;
-    color: #b02a2a;
-    background: transparent;
-}
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
 
-.btn-outline:hover {
-    background: #b02a2a;
-    color: white;
-}
+        .section-title p {
+            color: #b0b0b0;
+        }
 
-/* FEATURES */
-.features {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 70px 20px;
-    flex-wrap: wrap;
-}
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
 
-.card {
-    width: 260px;
-    padding: 22px;
-    border-radius: 14px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+            text-align: center;
+        }
 
-    background: rgba(255,255,255,0.45);
-    backdrop-filter: blur(14px);
+        .glass-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(199, 54, 43, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
 
-    box-shadow: 0 12px 25px rgba(0,0,0,0.06);
-}
+        .glass-card i {
+            font-size: 3rem;
+            color: #c7362b;
+            margin-bottom: 20px;
+        }
 
-.card h3 {
-    margin-bottom: 10px;
-    color: #111;
-}
+        .glass-card h3 {
+            margin-bottom: 15px;
+        }
 
-.card p {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.5;
-}
+        .glass-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
 
-/* STOCK SECTION */
-.stock {
-    padding: 60px 20px;
-    display: flex;
-    justify-content: center;
-}
+        /* Blood Stock Table */
+        .stock-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px;
+            overflow-x: auto;
+        }
 
-.stock-box {
-    width: 100%;
-    max-width: 900px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    padding: 25px;
-    border-radius: 18px;
+        th {
+            background: rgba(199, 54, 43, 0.3);
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
 
-    background: rgba(255,255,255,0.45);
-    backdrop-filter: blur(18px);
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-}
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(199, 54, 43, 0.1), rgba(199, 54, 43, 0.05));
+            border-radius: 40px;
+            margin: 40px 10%;
+            padding: 60px;
+            text-align: center;
+        }
 
-.stock-box h2 {
-    margin-bottom: 18px;
-    color: #111;
-}
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-}
+        .cta-section p {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-th {
-    background: #111;
-    color: white;
-    padding: 10px;
-}
+        /* Footer */
+        .footer {
+            background: #050505;
+            padding: 60px 10% 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 60px;
+        }
 
-td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-}
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
 
-/* CTA */
-.cta {
-    text-align: center;
-    margin-top: 20px;
-}
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
 
-.cta a {
-    display: inline-block;
-    padding: 12px 20px;
-    background: #b02a2a;
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-}
+        .footer-section p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
 
-/* FOOTER */
-.footer {
-    text-align: center;
-    padding: 18px;
-    font-size: 13px;
-    background: #111;
-    color: #ccc;
-}
+        .footer-section a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: 0.3s;
+        }
 
-</style>
+        .footer-section a:hover {
+            color: #c7362b;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+        }
+
+        /* Floating Home Button (hidden on homepage) */
+        .floating-home {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+            .nav-links {
+                gap: 15px;
+            }
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .btn-group {
+                justify-content: center;
+            }
+            .hero-stats {
+                margin-top: 50px;
+            }
+            .section {
+                padding: 50px 20px;
+            }
+            .cta-section {
+                margin: 40px 20px;
+                padding: 40px 20px;
+            }
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <div><b>Blood Bank System</b></div>
-    <div>
+<div class="bg-animation"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">
+        <i class="fas fa-droplet"></i> LifeFlow
+    </div>
+    <div class="nav-links">
         <a href="index.php">Home</a>
-        <a href="login.php">Login</a>
-        <a href="register.php">Register</a>
+        <a href="about.php">About</a>
+        <a href="contact.php">Contact</a>
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <a href="dashboard/<?php echo $_SESSION['role']; ?>.php" class="btn-login">Dashboard</a>
+        <?php else: ?>
+            <a href="login.php" class="btn-login">Login</a>
+        <?php endif; ?>
     </div>
-</div>
+</nav>
 
-<!-- HERO -->
-<div class="hero">
-
-    <div class="hero-card">
-
-        <h1>Blood Bank Management System</h1>
-
-        <p>
-            A centralized healthcare platform for managing donors, hospital requests, and real-time blood inventory tracking.
-        </p>
-
-        <div class="btn-group">
-            <a href="login.php" class="btn btn-primary">Login</a>
-            <a href="register.php" class="btn btn-outline">Register</a>
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="hero-content" data-aos="fade-right">
+        <div class="hero-badge">
+            <i class="fas fa-heartbeat"></i> 24/7 Emergency Support
         </div>
-
+        <h1>Donate Blood,<br>Save Lives Instantly</h1>
+        <p>Join the future of blood donation management. Every drop counts, every donor is a hero.</p>
+        <div class="btn-group">
+            <a href="register.php" class="btn btn-primary"><i class="fas fa-hand-holding-heart"></i> Become a Donor</a>
+            <a href="login.php" class="btn btn-outline"><i class="fas fa-hospital-user"></i> Hospital Login</a>
+            <a href="about.php" class="btn btn-outline"><i class="fas fa-info-circle"></i> Learn More</a>
+        </div>
     </div>
-
-</div>
-
-<!-- FEATURES -->
-<div class="features">
-
-    <div class="card">
-        <h3>Donor System</h3>
-        <p>Track donation history and eligibility with automated medical rules.</p>
+    <div class="hero-stats" data-aos="fade-left">
+        <div class="stat-circle">
+            <div class="circle">1248+</div>
+            <p>Lives Saved</p>
+        </div>
+        <div class="stat-circle">
+            <div class="circle">2530+</div>
+            <p>Active Donors</p>
+        </div>
+        <div class="stat-circle">
+            <div class="circle">48+</div>
+            <p>Hospitals</p>
+        </div>
     </div>
+</section>
 
-    <div class="card">
-        <h3>Hospital Requests</h3>
-        <p>Structured request workflow with approval system.</p>
+<!-- Features Section -->
+<section class="section" id="features">
+    <div class="section-title" data-aos="fade-up">
+        <h2>Why Choose LifeFlow?</h2>
+        <p>Next-generation blood bank management system for 2026</p>
     </div>
-
-    <div class="card">
-        <h3>Inventory Control</h3>
-        <p>Automatic blood stock updates after approval.</p>
+    <div class="cards-grid">
+        <div class="glass-card" data-aos="fade-up">
+            <i class="fas fa-bolt"></i>
+            <h3>Real-time Updates</h3>
+            <p>Instant blood stock updates and request tracking with live notifications</p>
+        </div>
+        <div class="glass-card" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Secure System</h3>
+            <p>Role-based access control for donors, hospitals & admin with encrypted data</p>
+        </div>
+        <div class="glass-card" data-aos="fade-up" data-aos-delay="200">
+            <i class="fas fa-chart-line"></i>
+            <h3>Analytics Dashboard</h3>
+            <p>Comprehensive insights, reports, and predictive analytics for better management</p>
+        </div>
+        <div class="glass-card" data-aos="fade-up" data-aos-delay="300">
+            <i class="fas fa-mobile-alt"></i>
+            <h3>Mobile Ready</h3>
+            <p>Fully responsive design that works perfectly on all devices</p>
+        </div>
     </div>
+</section>
 
-    <div class="card">
-        <h3>Secure System</h3>
-        <p>Role-based authentication for Admin, Hospital, Donor.</p>
+<!-- Blood Stock Section -->
+<section class="section">
+    <div class="section-title" data-aos="fade-up">
+        <h2>Current Blood Stock</h2>
+        <p>Real-time availability across all blood groups</p>
     </div>
+    <div class="stock-container" data-aos="fade-up">
+        <table>
+            <thead>
+                <tr>
+                    <th>Blood Group</th>
+                    <th>Units Available</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $result = mysqli_query($conn, "SELECT * FROM blood_stock ORDER BY FIELD(blood_group, 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-')");
+                while($row = mysqli_fetch_assoc($result)) {
+                    $statusClass = '';
+                    $statusText = '';
+                    if($row['units_available'] > 10) {
+                        $statusText = '✅ Available';
+                        $statusClass = 'style="color: #2ecc71;"';
+                    } elseif($row['units_available'] > 0) {
+                        $statusText = '⚠️ Low Stock';
+                        $statusClass = 'style="color: #f39c12;"';
+                    } else {
+                        $statusText = '❌ Critical';
+                        $statusClass = 'style="color: #e74c3c;"';
+                    }
+                    echo "<tr>
+                            <td><strong>{$row['blood_group']}</strong></td>
+                            <td>{$row['units_available']}</td>
+                            <td $statusClass>$statusText</td>
+                          </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</section>
 
-</div>
+<!-- CTA Section -->
+<section class="cta-section" data-aos="fade-up">
+    <h2>Ready to Make a Difference?</h2>
+    <p>Join thousands of donors who are saving lives every day. Your donation can save up to 3 lives!</p>
+    <div class="btn-group" style="justify-content: center;">
+        <a href="register.php" class="btn btn-primary"><i class="fas fa-hand-holding-heart"></i> Become a Donor</a>
+        <a href="contact.php" class="btn btn-outline"><i class="fas fa-envelope"></i> Contact Us</a>
+    </div>
+</section>
 
-<!-- STOCK -->
-<div class="stock">
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3><i class="fas fa-droplet"></i> LifeFlow</h3>
+            <p>Bridging donors & emergencies with cutting-edge technology. Saving lives, one donation at a time.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <p><a href="index.php">🏠 Home</a></p>
+            <p><a href="about.php">📖 About Us</a></p>
+            <p><a href="contact.php">📞 Contact</a></p>
+            <p><a href="login.php">🔐 Login</a></p>
+            <p><a href="register.php">📝 Register</a></p>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Info</h3>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i class="fas fa-envelope"></i> info@lifeflow.com</p>
+            <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+        </div>
+        <div class="footer-section">
+            <h3>Follow Us</h3>
+            <p><i class="fab fa-facebook"></i> <a href="#"> Facebook</a></p>
+            <p><i class="fab fa-twitter"></i> <a href="#"> Twitter</a></p>
+            <p><i class="fab fa-instagram"></i> <a href="#"> Instagram</a></p>
+            <p><i class="fab fa-linkedin"></i> <a href="#"> LinkedIn</a></p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 LifeFlow Blood Bank System | Saving Lives Every Day | Version 2.0</p>
+    </div>
+</footer>
 
-<div class="stock-box">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+    });
 
-<h2>Current Blood Availability</h2>
+    // Smooth scroll for anchor links (if any)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
 
-<table>
-
-<tr>
-    <th>Blood Group</th>
-    <th>Units</th>
-    <th>Status</th>
-</tr>
-
-<?php
-$result = mysqli_query($conn, "SELECT * FROM blood_stock");
-
-while($row = mysqli_fetch_assoc($result)) {
-?>
-
-<tr>
-    <td><?php echo $row['blood_group']; ?></td>
-    <td><?php echo $row['units_available']; ?></td>
-    <td>
-        <?php
-        $u = $row['units_available'];
-
-        if ($u <= 2) {
-            echo "<span style='color:#c0392b;font-weight:bold;'>Critical</span>";
-        } elseif ($u <= 5) {
-            echo "<span style='color:#b8860b;font-weight:bold;'>Low</span>";
-        } else {
-            echo "<span style='color:#1e7e34;font-weight:bold;'>Available</span>";
+    // Add active class to current nav link
+    const currentPage = window.location.pathname.split('/').pop();
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.php')) {
+            link.style.color = '#c7362b';
         }
-        ?>
-    </td>
-</tr>
-
-<?php } ?>
-
-</table>
-
-<div class="cta">
-    <a href="login.php">Request Blood Now</a>
-</div>
-
-</div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-    Blood Bank Management System © 2026
-</div>
-
+    });
+</script>
 </body>
 </html>

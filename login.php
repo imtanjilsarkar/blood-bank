@@ -2,275 +2,452 @@
 session_start();
 include("database/connection.php");
 
-if (isset($_POST['login'])) {
-
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) == 1) {
-
-        $user = mysqli_fetch_assoc($result);
-
-        if (password_verify($password, $user['password'])) {
-
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['name'] = $user['name'];
-            $_SESSION['role'] = $user['role'];
-
-            if ($user['role'] == 'donor') {
-                header("Location: dashboard/donor.php");
-            } elseif ($user['role'] == 'hospital') {
-                header("Location: dashboard/hospital.php");
-            } else {
-                header("Location: dashboard/admin.php");
-            }
-            exit();
-
-        } else {
-            $error = "Invalid credentials";
-        }
-
+// Handle demo login
+if (isset($_GET['demo'])) {
+    $role = $_GET['demo'];
+    
+    if ($role == 'admin') {
+        $email = 'admin@lifeflow.com';
+        $name = 'System Admin';
+    } elseif ($role == 'hospital') {
+        $email = 'hospital@citygen.com';
+        $name = 'City General Hospital';
+    } elseif ($role == 'donor') {
+        $email = 'john@example.com';
+        $name = 'John Doe';
     } else {
-        $error = "User not found";
+        $email = 'jane@example.com';
+        $name = 'Jane Smith';
+    }
+    
+    // Get user from database
+    $result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+    $user = mysqli_fetch_assoc($result);
+    
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['name'] = $user['name'];
+        $_SESSION['role'] = $user['role'];
+        
+        if ($user['role'] == 'admin') header("Location: dashboard/admin.php");
+        elseif ($user['role'] == 'hospital') header("Location: dashboard/hospital.php");
+        else header("Location: dashboard/donor.php");
+        exit();
+    }
+}
+
+// Handle normal login
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password'];
+    
+    $result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+    $user = mysqli_fetch_assoc($result);
+    
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['name'] = $user['name'];
+        $_SESSION['role'] = $user['role'];
+        
+        if ($user['role'] == 'admin') header("Location: dashboard/admin.php");
+        elseif ($user['role'] == 'hospital') header("Location: dashboard/hospital.php");
+        else header("Location: dashboard/donor.php");
+        exit();
+    } else {
+        $error = "Invalid email or password!";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | LifeFlow Blood Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
 
-/* 🌈 BACKGROUND */
-body {
-    margin: 0;
-    height: 100vh;
-    font-family: Inter, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
 
-    background: linear-gradient(135deg, #f4f6f9, #ffecec, #ffffff);
-}
+        .bg-animation .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199, 54, 43, 0.3), transparent);
+            animation: float 20s infinite;
+        }
 
-/* floating blobs */
-body::before,
-body::after {
-    content: "";
-    position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    background: rgba(176, 42, 42, 0.15);
-    filter: blur(80px);
-    z-index: 0;
-    animation: float 10s infinite ease-in-out;
-}
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
 
-body::before {
-    top: -80px;
-    left: -80px;
-}
+        .circle-2 {
+            width: 500px;
+            height: 500px;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: 5s;
+        }
 
-body::after {
-    bottom: -80px;
-    right: -80px;
-    animation-delay: 4s;
-}
+        .circle-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            animation-delay: 10s;
+        }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(50px); }
-    100% { transform: translateY(0px); }
-}
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-50px) scale(1.1); }
+        }
 
-/* WRAPPER */
-.wrapper {
-    display: flex;
-    gap: 25px;
-    z-index: 2;
-}
+        /* Login Container */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+        }
 
-/* 🧊 GLASS LOGIN BOX */
-.box {
-    width: 360px;
-    padding: 30px;
-    border-radius: 16px;
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 45px 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease;
+        }
 
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-}
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #222;
-}
+        .logo i {
+            font-size: 3rem;
+            color: #c7362b;
+        }
 
-/* INPUT */
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 8px;
-    outline: none;
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #fff, #c7362b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-top: 10px;
+        }
 
-    background: rgba(255,255,255,0.6);
-}
+        .logo p {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
 
-/* BUTTON */
-button {
-    width: 100%;
-    padding: 10px;
-    background: #b02a2a;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+        .form-group {
+            margin-bottom: 25px;
+        }
 
-button:hover {
-    opacity: 0.9;
-}
+        .input-group {
+            position: relative;
+        }
 
-/* ERROR */
-.error {
-    color: red;
-    text-align: center;
-    margin-bottom: 10px;
-}
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #c7362b;
+        }
 
-/* DEMO PANEL */
-.demo {
-    width: 260px;
-}
+        .input-group input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
 
-.title {
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
-}
+        .input-group input:focus {
+            outline: none;
+            border-color: #c7362b;
+            background: rgba(255, 255, 255, 0.15);
+        }
 
-.demo-card {
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
 
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #c7362b, #a1241a);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-.demo-card:hover {
-    transform: translateY(-5px);
-}
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(199, 54, 43, 0.4);
+        }
 
-.demo-card h4 {
-    margin: 0;
-    font-size: 14px;
-}
+        /* Demo Buttons Section */
+        .demo-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-.demo-card p {
-    margin: 5px 0 0;
-    font-size: 12px;
-    color: #666;
-}
+        .demo-title {
+            text-align: center;
+            color: #b0b0b0;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-/* SIGNUP */
-.signup {
-    text-align: center;
-    margin-top: 15px;
-    font-size: 14px;
-    color: #444;
-}
+        .demo-title::before,
+        .demo-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-.signup a {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid #b02a2a;
-    color: #b02a2a;
-    text-decoration: none;
-    transition: 0.3s;
-}
+        .demo-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
 
-.signup a:hover {
-    background: #b02a2a;
-    color: white;
-}
+        .demo-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
 
-</style>
+        .demo-admin {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.1));
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .demo-admin:hover {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .demo-hospital {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.1));
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+
+        .demo-hospital:hover {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .demo-donor {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.1));
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+        }
+
+        .demo-donor:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #b0b0b0;
+        }
+
+        .register-link a {
+            color: #c7362b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            text-align: center;
+        }
+
+        .info-note {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            color: #3498db;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+            .demo-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
+<div class="bg-animation">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+</div>
 
-<div class="wrapper">
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo">
+            <i class="fas fa-droplet"></i>
+            <h1>LifeFlow</h1>
+            <p>Blood Bank Management System</p>
+        </div>
 
-    <!-- LOGIN BOX -->
-    <div class="box">
+        <?php if (isset($error)): ?>
+            <div class="alert">
+                <i class="fas fa-exclamation-triangle"></i> <?= $error ?>
+            </div>
+        <?php endif; ?>
 
-        <h2>Login</h2>
-
-        <?php if(isset($error)) echo "<div class='error'>$error</div>"; ?>
-
+        <!-- Normal Login Form -->
         <form method="POST">
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+            </div>
 
-            <button type="submit" name="login">Login</button>
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
         </form>
 
-        <div class="signup">
-            Don’t have an account?<br>
-            <a href="register.php">Create Account</a>
+        <!-- Demo Login Section -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <span>Quick Demo Access</span>
+            </div>
+            <div class="demo-buttons">
+                <button onclick="demoLogin('admin')" class="demo-btn demo-admin">
+                    <i class="fas fa-user-shield"></i> Admin Demo
+                </button>
+                <button onclick="demoLogin('hospital')" class="demo-btn demo-hospital">
+                    <i class="fas fa-hospital"></i> Hospital Demo
+                </button>
+                <button onclick="demoLogin('donor')" class="demo-btn demo-donor">
+                    <i class="fas fa-hand-holding-heart"></i> Donor Demo
+                </button>
+            </div>
+            <div class="info-note">
+                <i class="fas fa-info-circle"></i> Demo accounts: One-click login to test all features!
+            </div>
         </div>
 
+        <div class="register-link">
+            Don't have an account? <a href="register.php">Register here</a>
+        </div>
     </div>
-
-    <!-- DEMO PANEL -->
-    <div class="demo">
-
-        <div class="title">Quick Demo Login</div>
-
-        <div class="demo-card" onclick="fillLogin('admin@test.com','123456')">
-            <h4>Admin Login</h4>
-            <p>admin@test.com</p>
-        </div>
-
-        <div class="demo-card" onclick="fillLogin('hospital@test.com','123456')">
-            <h4>Hospital Login</h4>
-            <p>hospital@test.com</p>
-        </div>
-
-        <div class="demo-card" onclick="fillLogin('donor@test.com','123456')">
-            <h4>Donor Login</h4>
-            <p>donor@test.com</p>
-        </div>
-
-    </div>
-
 </div>
 
 <script>
-function fillLogin(email, password) {
-    document.getElementById("email").value = email;
-    document.getElementById("password").value = password;
-}
+    function demoLogin(role) {
+        // Show loading effect
+        const btns = document.querySelectorAll('.demo-btn');
+        btns.forEach(btn => {
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'wait';
+        });
+        
+        // Redirect to login with demo parameter
+        window.location.href = `?demo=${role}`;
+    }
 </script>
-
 </body>
 </html>

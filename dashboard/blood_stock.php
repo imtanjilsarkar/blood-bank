@@ -6,204 +6,223 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+$stock = mysqli_query($conn, "SELECT * FROM blood_stock ORDER BY FIELD(blood_group, 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-')");
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Blood Stock System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Stock | LifeFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            padding: 30px;
+        }
 
-/* ===== BACKGROUND ===== */
-body {
-    margin: 0;
-    font-family: Inter, sans-serif;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    background: linear-gradient(135deg, #f4f6f9, #ffecec, #ffffff);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-/* floating glow */
-body::before,
-body::after {
-    content: "";
-    position: fixed;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    background: rgba(176, 42, 42, 0.15);
-    filter: blur(90px);
-    z-index: 0;
-    animation: float 10s infinite ease-in-out;
-}
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #fff, #c7362b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-body::before {
-    top: -80px;
-    left: -80px;
-}
+        /* Stock Grid */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
 
-body::after {
-    bottom: -80px;
-    right: -80px;
-}
+        .stock-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(40px); }
-    100% { transform: translateY(0px); }
-}
+        .stock-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
 
-/* ===== CONTAINER ===== */
-.container {
-    padding: 40px;
-    position: relative;
-    z-index: 2;
-}
+        .blood-group {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
 
-/* TITLE */
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #222;
-}
+        .units {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 20px 0;
+        }
 
-/* ===== GLASS TABLE WRAPPER ===== */
-.table-box {
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 600;
+        }
 
-    border-radius: 16px;
-    padding: 10px;
+        .status-critical {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            animation: pulse 1s infinite;
+        }
 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    overflow: hidden;
-}
+        .status-low {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
 
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        .status-normal {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
 
-/* HEADER */
-th {
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 14px;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
 
-/* ROWS */
-td {
-    text-align: center;
-    padding: 14px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    font-size: 14px;
-}
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
 
-/* ROW HOVER */
-tr:hover {
-    background: rgba(176, 42, 42, 0.08);
-    transition: 0.2s;
-}
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
 
-/* ===== BADGES ===== */
-.badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
+        /* Summary Stats */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
 
-/* status colors */
-.low {
-    background: rgba(255, 99, 132, 0.15);
-    color: #c0392b;
-}
+        .stat-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
 
-.critical {
-    background: rgba(255, 193, 7, 0.2);
-    color: #856404;
-}
+        .stat-summary i {
+            font-size: 2rem;
+            color: #c7362b;
+            margin-bottom: 10px;
+        }
 
-.ok {
-    background: rgba(46, 204, 113, 0.2);
-    color: #1e7e34;
-}
-
-/* HEADER CARD STYLE (optional feel) */
-.header-box {
-    margin-bottom: 20px;
-    padding: 20px;
-    border-radius: 16px;
-
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(12px);
-
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-</style>
+        .stat-summary .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+    </style>
 </head>
-
 <body>
-
 <div class="container">
-
-    <div class="header-box">
-        <h2>🩸 Blood Stock Management</h2>
-        <p>Real-time inventory monitoring system for hospital blood bank</p>
+    <div class="header">
+        <h1><i class="fas fa-warehouse"></i> Blood Stock Inventory</h1>
+        <p style="color: #b0b0b0; margin-top: 10px;">Real-time blood availability across all blood groups</p>
     </div>
 
-    <div class="table-box">
-
-        <table>
-
-            <tr>
-                <th>ID</th>
-                <th>Blood Group</th>
-                <th>Units Available</th>
-                <th>Status</th>
-            </tr>
-
-            <?php
-            $result = mysqli_query($conn, "SELECT * FROM blood_stock");
-
-            while ($row = mysqli_fetch_assoc($result)) {
-            ?>
-
-            <tr>
-                <td><?php echo $row['id']; ?></td>
-                <td><b><?php echo $row['blood_group']; ?></b></td>
-                <td><?php echo $row['units_available']; ?></td>
-
-                <td>
-                    <?php
-                    $units = $row['units_available'];
-
-                    if ($units <= 2) {
-                        echo "<span class='badge low'>Critical</span>";
-                    } elseif ($units <= 5) {
-                        echo "<span class='badge critical'>Low</span>";
-                    } else {
-                        echo "<span class='badge ok'>Available</span>";
-                    }
-                    ?>
-                </td>
-            </tr>
-
-            <?php } ?>
-
-        </table>
-
+    <div class="stock-grid">
+        <?php 
+        $totalUnits = 0;
+        $criticalCount = 0;
+        while ($row = mysqli_fetch_assoc($stock)):
+            $units = $row['units_available'];
+            $totalUnits += $units;
+            $status = '';
+            $statusClass = '';
+            $percentage = min(($units / 50) * 100, 100);
+            
+            if ($units <= 2) {
+                $status = '⚠️ CRITICAL';
+                $statusClass = 'status-critical';
+                $criticalCount++;
+                $fillColor = '#e74c3c';
+            } elseif ($units <= 5) {
+                $status = '⚠️ LOW STOCK';
+                $statusClass = 'status-low';
+                $fillColor = '#f39c12';
+            } else {
+                $status = '✓ AVAILABLE';
+                $statusClass = 'status-normal';
+                $fillColor = '#2ecc71';
+            }
+        ?>
+        <div class="stock-card" data-aos="fade-up">
+            <div class="blood-group"><?= $row['blood_group'] ?></div>
+            <div class="units"><?= $units ?> <span style="font-size: 1rem;">units</span></div>
+            <div class="status <?= $statusClass ?>"><?= $status ?></div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: <?= $percentage ?>%; background: <?= $fillColor ?>;"></div>
+            </div>
+        </div>
+        <?php endwhile; ?>
     </div>
 
+    <div class="summary-stats">
+        <div class="stat-summary">
+            <i class="fas fa-tint"></i>
+            <div class="value"><?= $totalUnits ?></div>
+            <p>Total Units Available</p>
+        </div>
+        <div class="stat-summary">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="value"><?= $criticalCount ?></div>
+            <p>Critical Stock Groups</p>
+        </div>
+        <div class="stat-summary">
+            <i class="fas fa-chart-line"></i>
+            <div class="value"><?= round($totalUnits / 8, 1) ?></div>
+            <p>Average Units/Group</p>
+        </div>
+    </div>
 </div>
 
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+</script>
 </body>
 </html>

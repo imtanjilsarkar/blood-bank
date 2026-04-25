@@ -80,6 +80,8 @@ Click "Import" tab
 Click "Choose File" and select database_schema.sql
 
 Click "Go" at the bottom
+
+Then go to a browser: http://localhost/BLOOD-BANK/
 ```
 
 #### Project Structure

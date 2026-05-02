@@ -358,6 +358,33 @@ include("database/connection.php");
             color: #c7362b;
         }
 
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #c7362b;
+            transform: translateY(-3px);
+        }
+
+        .social-links a i {
+            font-size: 1.2rem;
+            color: white;
+        }
+
         .footer-bottom {
             text-align: center;
             padding-top: 30px;
@@ -510,13 +537,13 @@ include("database/connection.php");
                     $statusClass = '';
                     $statusText = '';
                     if($row['units_available'] > 10) {
-                        $statusText = '✅ Available';
+                        $statusText = 'Available';
                         $statusClass = 'style="color: #2ecc71;"';
                     } elseif($row['units_available'] > 0) {
-                        $statusText = '⚠️ Low Stock';
+                        $statusText = 'Low Stock';
                         $statusClass = 'style="color: #f39c12;"';
                     } else {
-                        $statusText = '❌ Critical';
+                        $statusText = 'Critical';
                         $statusClass = 'style="color: #e74c3c;"';
                     }
                     echo "<tr>
@@ -546,32 +573,33 @@ include("database/connection.php");
     <div class="footer-content">
         <div class="footer-section">
             <h3><i class="fas fa-droplet"></i> LifeFlow</h3>
-            <p>Bridging donors & emergencies with cutting-edge technology. Saving lives, one donation at a time.</p>
+            <p>Bridging donors and emergencies with cutting-edge technology. Saving lives, one donation at a time.</p>
         </div>
         <div class="footer-section">
             <h3>Quick Links</h3>
-            <p><a href="index.php">🏠 Home</a></p>
-            <p><a href="about.php">📖 About Us</a></p>
-            <p><a href="contact.php">📞 Contact</a></p>
-            <p><a href="login.php">🔐 Login</a></p>
-            <p><a href="register.php">📝 Register</a></p>
+            <p><a href="index.php">Home</a></p>
+            <p><a href="about.php">About Us</a></p>
+            <p><a href="contact.php">Contact</a></p>
+            <p><a href="login.php">Login</a></p>
+            <p><a href="register.php">Register</a></p>
         </div>
         <div class="footer-section">
             <h3>Contact Info</h3>
-            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
-            <p><i class="fas fa-envelope"></i> info@lifeflow.com</p>
-            <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+            <p><i class="fas fa-map-marker-alt"></i> Basundhara, Dhaka - 1200</p>
+            <p><i class="fas fa-envelope"></i> im.tanjilsarkar@gmail.com</p>
         </div>
         <div class="footer-section">
-            <h3>Follow Us</h3>
-            <p><i class="fab fa-facebook"></i> <a href="#"> Facebook</a></p>
-            <p><i class="fab fa-twitter"></i> <a href="#"> Twitter</a></p>
-            <p><i class="fab fa-instagram"></i> <a href="#"> Instagram</a></p>
-            <p><i class="fab fa-linkedin"></i> <a href="#"> LinkedIn</a></p>
+            <h3>Connect With Me</h3>
+            <div class="social-links">
+                <a href="https://www.facebook.com/tanjilsarkar123" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/tanjilsarkar_" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/tanji-sarkar/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/imtanjilsarkar" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2026 LifeFlow Blood Bank System | Saving Lives Every Day | Version 2.0</p>
+        <p>&copy; 2026 LifeFlow Blood Bank System | Developed by Tanjil Sarkar | Saving Lives Every Day</p>
     </div>
 </footer>
 

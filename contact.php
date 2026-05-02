@@ -322,57 +322,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #e74c3c;
         }
 
-        /* FAQ Section */
-        .faq-section {
-            padding: 80px 10%;
-            background: rgba(199, 54, 43, 0.03);
-        }
-
-        .faq-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-top: 50px;
-        }
-
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .faq-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .faq-question {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            color: #b0b0b0;
-            margin-top: 0;
-            line-height: 1.6;
-        }
-
-        .faq-item.active .faq-answer {
-            max-height: 200px;
-            margin-top: 15px;
-        }
-
-        .faq-item.active .faq-question i {
-            transform: rotate(180deg);
-        }
-
         /* Footer */
         .footer {
             background: #050505;
@@ -405,6 +354,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         .footer-section a:hover {
             color: #c7362b;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #c7362b;
+            transform: translateY(-3px);
+        }
+
+        .social-links a i {
+            font-size: 1.2rem;
+            color: white;
         }
 
         .footer-bottom {
@@ -464,9 +440,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             .contact-grid {
                 grid-template-columns: 1fr;
             }
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
             .floating-home {
                 width: 45px;
                 height: 45px;
@@ -501,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <section class="page-hero">
     <div>
         <h1>Get in Touch</h1>
-        <p>Have questions? We're here to help. Reach out to us anytime.</p>
+        <p>Have questions? We are here to help. Reach out to us anytime.</p>
     </div>
 </section>
 
@@ -516,18 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="info-content">
                     <h3>Visit Us</h3>
-                    <p>123 Health Street, Medical City, MC 12345</p>
-                </div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-icon">
-                    <i class="fas fa-phone"></i>
-                </div>
-                <div class="info-content">
-                    <h3>Call Us</h3>
-                    <p>Emergency: <strong>+1 (555) 911-1234</strong></p>
-                    <p>Support: +1 (555) 123-4567</p>
+                    <p>Basundhara, Dhaka - 1200, Bangladesh</p>
                 </div>
             </div>
 
@@ -536,27 +498,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="fas fa-envelope"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Email Us</h3>
-                    <p>General: info@lifeflow.com</p>
-                    <p>Support: support@lifeflow.com</p>
+                    <h3>Email Me</h3>
+                    <p>im.tanjilsarkar@gmail.com</p>
                 </div>
             </div>
 
             <div class="info-card">
                 <div class="info-icon">
-                    <i class="fas fa-clock"></i>
+                    <i class="fab fa-facebook-f"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Working Hours</h3>
-                    <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                    <p>Saturday: 10:00 AM - 4:00 PM</p>
-                    <p>Sunday: Closed</p>
-                    <p style="color: #c7362b; margin-top: 5px;">24/7 Emergency Support Available</p>
+                    <h3>Facebook</h3>
+                    <p><a href="https://www.facebook.com/tanjilsarkar123" target="_blank" style="color: #b0b0b0;">facebook.com/tanjilsarkar123</a></p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Instagram</h3>
+                    <p><a href="https://www.instagram.com/tanjilsarkar_" target="_blank" style="color: #b0b0b0;">instagram.com/tanjilsarkar_</a></p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fab fa-linkedin-in"></i>
+                </div>
+                <div class="info-content">
+                    <h3>LinkedIn</h3>
+                    <p><a href="https://www.linkedin.com/in/tanji-sarkar/" target="_blank" style="color: #b0b0b0;">linkedin.com/in/tanjilsarkar</a></p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+                <div class="info-content">
+                    <h3>GitHub</h3>
+                    <p><a href="https://github.com/imtanjilsarkar" target="_blank" style="color: #b0b0b0;">github.com/imtanjilsarkar</a></p>
                 </div>
             </div>
 
             <div class="map-container">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.11976397304681!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1699999999999!5m2!1sen!2s" 
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14603.467184580228!2d90.38495935!3d23.82172245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c732e6e9dda7%3A0xfe5e08f5a7e71c3!2sBasundhara%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1699999999999!5m2!1sen!2sbd" 
                         allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
@@ -564,7 +552,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Right Side - Contact Form -->
         <div data-aos="fade-left">
             <div class="form-container">
-                <h2><i class="fas fa-paper-plane"></i> Send us a Message</h2>
+                <h2><i class="fas fa-paper-plane"></i> Send me a Message</h2>
                 
                 <?php if ($success): ?>
                     <div class="alert alert-success">
@@ -592,7 +580,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <option value="Donation Related">Donation Related</option>
                             <option value="Hospital Partnership">Hospital Partnership</option>
                             <option value="Technical Support">Technical Support</option>
-                            <option value="Feedback">Feedback / Suggestion</option>
+                            <option value="Feedback">Feedback & Suggestion</option>
                             <option value="Emergency">Emergency Request</option>
                         </select>
                     </div>
@@ -608,99 +596,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 </div>
 
-<!-- FAQ Section -->
-<div class="faq-section">
-    <div class="section-title" data-aos="fade-up" style="text-align: center; margin-bottom: 30px;">
-        <h2>Frequently Asked Questions</h2>
-        <p>Quick answers to common questions</p>
-    </div>
-    <div class="faq-grid">
-        <div class="faq-item" data-aos="fade-up" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>📝 How often can I donate blood?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                For whole blood donation, you need to wait at least 56 days (8 weeks) between donations. For safety reasons, we recommend 90 days gap between donations to ensure your body fully recovers.
-            </div>
-        </div>
-        <div class="faq-item" data-aos="fade-up" data-aos-delay="100" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>👤 Who can donate blood?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                Generally, healthy individuals aged 18-65 years, weighing at least 50kg (110 lbs), with normal hemoglobin levels can donate. A medical screening is done before each donation to ensure safety.
-            </div>
-        </div>
-        <div class="faq-item" data-aos="fade-up" data-aos-delay="200" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>⏱️ How long does the donation process take?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                The entire process takes about 30-45 minutes, including registration (5-10 min), medical screening (10-15 min), actual donation (8-10 minutes), and refreshments (10-15 min).
-            </div>
-        </div>
-        <div class="faq-item" data-aos="fade-up" data-aos-delay="300" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>🩸 Is blood donation safe?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                Yes! We use sterile, single-use equipment for each donor. There's absolutely no risk of contracting any disease during the donation process. All needles and bags are disposed of properly after single use.
-            </div>
-        </div>
-        <div class="faq-item" data-aos="fade-up" data-aos-delay="400" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>🍽️ What should I do before donating?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                Eat a healthy meal 2-3 hours before donation, drink plenty of water, get adequate sleep, and avoid fatty foods. Don't donate on an empty stomach!
-            </div>
-        </div>
-        <div class="faq-item" data-aos="fade-up" data-aos-delay="500" onclick="toggleFaq(this)">
-            <div class="faq-question">
-                <span>🏥 Can my hospital partner with LifeFlow?</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="faq-answer">
-                Absolutely! We're always looking to partner with more hospitals. Please contact us via the form above with "Hospital Partnership" as the subject, and our team will reach out within 48 hours.
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Footer -->
 <footer class="footer">
     <div class="footer-content">
         <div class="footer-section">
             <h3><i class="fas fa-droplet"></i> LifeFlow</h3>
-            <p>Bridging donors & emergencies with cutting-edge technology. Saving lives, one donation at a time.</p>
+            <p>Bridging donors and emergencies with cutting-edge technology. Saving lives, one donation at a time.</p>
         </div>
         <div class="footer-section">
             <h3>Quick Links</h3>
-            <p><a href="index.php">🏠 Home</a></p>
-            <p><a href="about.php">📖 About Us</a></p>
-            <p><a href="contact.php">📞 Contact</a></p>
+            <p><a href="index.php">Home</a></p>
+            <p><a href="about.php">About Us</a></p>
+            <p><a href="contact.php">Contact</a></p>
         </div>
         <div class="footer-section">
             <h3>Contact Info</h3>
-            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
-            <p><i class="fas fa-envelope"></i> info@lifeflow.com</p>
-            <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+            <p><i class="fas fa-map-marker-alt"></i> Basundhara, Dhaka - 1200</p>
+            <p><i class="fas fa-envelope"></i> im.tanjilsarkar@gmail.com</p>
         </div>
         <div class="footer-section">
-            <h3>Follow Us</h3>
-            <p><i class="fab fa-facebook"></i> <a href="#"> Facebook</a></p>
-            <p><i class="fab fa-twitter"></i> <a href="#"> Twitter</a></p>
-            <p><i class="fab fa-instagram"></i> <a href="#"> Instagram</a></p>
-            <p><i class="fab fa-linkedin"></i> <a href="#"> LinkedIn</a></p>
+            <h3>Connect With Me</h3>
+            <div class="social-links">
+                <a href="https://www.facebook.com/tanjilsarkar123" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/tanjilsarkar_" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/tanji-sarkar/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/imtanjilsarkar" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2026 LifeFlow Blood Bank System | Saving Lives Every Day</p>
+        <p>&copy; 2026 LifeFlow Blood Bank System | Developed by Tanjil Sarkar | Saving Lives Every Day</p>
     </div>
 </footer>
 
@@ -715,10 +640,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         duration: 800,
         once: true
     });
-
-    function toggleFaq(element) {
-        element.classList.toggle('active');
-    }
 
     // Form validation
     document.getElementById('contactForm')?.addEventListener('submit', function(e) {
